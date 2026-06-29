@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}Newsletters — NewsApp{% endblock %}
+{% block content %}
+<h2>
+    Newsletters
+    {% if user.role == 'journalist' or user.role == 'editor' %}
+        <a href="{% url 'newsletter_create' %}" class="btn btn-primary" style="float:right;font-size:0.85rem;">+ New Newsletter</a>
+    {% endif %}
+</h2>
+
+{% if not newsletters %}
+    <div class="card"><p>No newsletters yet.</p></div>
+{% endif %}
+
+{% for newsletter in newsletters %}
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;">
+            <h3><a href="{% url 'newsletter_detail' newsletter.pk %}" style="text-decoration:none;color:#1a1a2e;">{{ newsletter.title }}</a></h3>
+            <p class="meta">By {{ newsletter.author.get_full_name|default:newsletter.author.username }} · {{ newsletter.created_at|date:"M j, Y" }} · {{ newsletter.articles.count }} article{{ newsletter.articles.count|pluralize }}</p>
+            {% if newsletter.description %}<p>{{ newsletter.description|truncatewords:20 }}</p>{% endif %}
+        </div>
+        {% if user.role == 'journalist' or user.role == 'editor' %}
+        <div style="margin-left:1rem;">
+            <a href="{% url 'newsletter_update' newsletter.pk %}" class="btn btn-secondary" style="font-size:0.8rem;">Edit</a>
+            <a href="{% url 'newsletter_delete' newsletter.pk %}" class="btn btn-danger" style="font-size:0.8rem;">Delete</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

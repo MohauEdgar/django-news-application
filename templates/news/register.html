@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}Register — NewsApp{% endblock %}
+{% block content %}
+<div style="max-width:480px;margin:0 auto;">
+    <div class="card">
+        <h2>Create Account</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    {% for error in field.errors %}
+                        <p style="color:#721c24;font-size:0.85rem;">{{ error }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" style="width:100%">Create Account</button>
+            </div>
+        </form>
+        <p style="margin-top:1rem;text-align:center;font-size:0.9rem;">
+            Already have an account? <a href="{% url 'login' %}">Sign In</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

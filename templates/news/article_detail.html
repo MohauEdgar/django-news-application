@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}{{ article.title }} — NewsApp{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>{{ article.title }}</h2>
+    <p class="meta">
+        By <strong>{{ article.author.get_full_name|default:article.author.username }}</strong>
+        <span class="badge badge-{{ article.author.role }}">{{ article.author.get_role_display }}</span>
+        {% if article.publisher %} · {{ article.publisher.name }}{% endif %}
+        · {{ article.created_at|date:"F j, Y" }}
+        &nbsp;
+        {% if article.approved %}
+            <span class="badge badge-approved">Published {{ article.approved_at|date:"M j, Y" }}</span>
+        {% else %}
+            <span class="badge badge-pending">Pending Review</span>
+        {% endif %}
+    </p>
+    <div style="margin-top:1.2rem;line-height:1.8;">
+        {{ article.content|linebreaks }}
+    </div>
+    <div style="margin-top:1.5rem;border-top:1px solid #eee;padding-top:1rem;">
+        <a href="{% url 'article_list' %}" class="btn btn-secondary">← Back</a>
+        {% if user.role == 'journalist' or user.role == 'editor' %}
+            <a href="{% url 'article_update' article.pk %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'article_delete' article.pk %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+        {% if user.role == 'editor' and not article.approved %}
+            <form method="post" action="{% url 'approve_article' article.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success">Approve & Publish</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Articles — NewsApp{% endblock %}
+{% block content %}
+<h2>
+    Articles
+    {% if user.role == 'journalist' or user.role == 'editor' %}
+        <a href="{% url 'article_create' %}" class="btn btn-primary" style="float:right;font-size:0.85rem;">+ New Article</a>
+    {% endif %}
+</h2>
+
+{% if not articles %}
+    <div class="card"><p>No articles available yet.</p></div>
+{% endif %}
+
+{% for article in articles %}
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;">
+            <h3><a href="{% url 'article_detail' article.pk %}" style="text-decoration:none;color:#1a1a2e;">{{ article.title }}</a></h3>
+            <p class="meta">
+                By {{ article.author.get_full_name|default:article.author.username }}
+                {% if article.publisher %} · {{ article.publisher.name }}{% endif %}
+                · {{ article.created_at|date:"M j, Y" }}
+            </p>
+            <p>{{ article.content|truncatewords:30 }}</p>
+        </div>
+        <div style="margin-left:1rem;text-align:right;">
+            {% if article.approved %}
+                <span class="badge badge-approved">Published</span>
+            {% else %}
+                <span class="badge badge-pending">Pending</span>
+            {% endif %}
+            {% if user.role == 'journalist' or user.role == 'editor' %}
+                <br><br>
+                <a href="{% url 'article_update' article.pk %}" class="btn btn-secondary" style="font-size:0.8rem;">Edit</a>
+                <a href="{% url 'article_delete' article.pk %}" class="btn btn-danger" style="font-size:0.8rem;">Delete</a>
+                {% if user.role == 'editor' and not article.approved %}
+                    <a href="{% url 'approve_article' article.pk %}" class="btn btn-success" style="font-size:0.8rem;">Approve</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

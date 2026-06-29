@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{% if object %}Edit Article{% else %}New Article{% endif %} — NewsApp{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>{% if object %}Edit Article{% else %}Write New Article{% endif %}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<small style="color:#777;">{{ field.help_text }}</small>{% endif %}
+            {% for error in field.errors %}
+                <p style="color:#721c24;font-size:0.85rem;">{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if object %}Save Changes{% else %}Submit for Review{% endif %}</button>
+            <a href="{% url 'article_list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

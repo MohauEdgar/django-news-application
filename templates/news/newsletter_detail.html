@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}{{ newsletter.title }} — NewsApp{% endblock %}
+{% block content %}
+<div class="card">
+    <h2>{{ newsletter.title }}</h2>
+    <p class="meta">By <strong>{{ newsletter.author.get_full_name|default:newsletter.author.username }}</strong> · {{ newsletter.created_at|date:"F j, Y" }}</p>
+    {% if newsletter.description %}
+        <p style="margin:1rem 0;font-style:italic;color:#555;">{{ newsletter.description }}</p>
+    {% endif %}
+    <hr style="margin:1rem 0;border:none;border-top:1px solid #eee;">
+    <h3 style="margin-bottom:1rem;">Articles in this newsletter</h3>
+    {% for article in newsletter.articles.all %}
+        <div style="padding:0.8rem 0;border-bottom:1px solid #f0f0f0;">
+            <a href="{% url 'article_detail' article.pk %}" style="font-weight:bold;color:#1a1a2e;text-decoration:none;">{{ article.title }}</a>
+            <p class="meta">{{ article.author.username }} · {{ article.created_at|date:"M j, Y" }}
+                {% if article.approved %}<span class="badge badge-approved">Published</span>{% endif %}
+            </p>
+        </div>
+    {% empty %}
+        <p style="color:#777;">No articles added yet.</p>
+    {% endfor %}
+    <div style="margin-top:1.5rem;">
+        <a href="{% url 'newsletter_list' %}" class="btn btn-secondary">← Back</a>
+        {% if user.role == 'journalist' or user.role == 'editor' %}
+            <a href="{% url 'newsletter_update' newsletter.pk %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'newsletter_delete' newsletter.pk %}" class="btn btn-danger">Delete</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

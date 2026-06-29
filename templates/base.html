@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}NewsApp{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Georgia, serif; background: #f5f5f0; color: #1a1a1a; }
+        header { background: #1a1a2e; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { font-size: 1.6rem; letter-spacing: 1px; }
+        nav a { color: #ccc; text-decoration: none; margin-left: 1.2rem; font-size: 0.9rem; }
+        nav a:hover { color: #fff; }
+        .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .card { background: #fff; border-radius: 6px; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
+        .badge-approved { background: #d4edda; color: #155724; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-editor { background: #cce5ff; color: #004085; }
+        .badge-journalist { background: #d1ecf1; color: #0c5460; }
+        .badge-reader { background: #e2e3e5; color: #383d41; }
+        .btn { display: inline-block; padding: 0.4rem 1rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; border: none; cursor: pointer; }
+        .btn-primary { background: #1a1a2e; color: #fff; }
+        .btn-danger { background: #dc3545; color: #fff; }
+        .btn-success { background: #28a745; color: #fff; }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn:hover { opacity: 0.85; }
+        .messages { list-style: none; margin-bottom: 1rem; }
+        .messages li { padding: 0.6rem 1rem; border-radius: 4px; margin-bottom: 0.4rem; }
+        .messages .success { background: #d4edda; color: #155724; }
+        .messages .error { background: #f8d7da; color: #721c24; }
+        .messages .info { background: #d1ecf1; color: #0c5460; }
+        form label { display: block; margin-top: 0.8rem; font-weight: bold; font-size: 0.9rem; }
+        form input, form textarea, form select { width: 100%; padding: 0.5rem; margin-top: 0.3rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+        form textarea { min-height: 150px; resize: vertical; }
+        .form-actions { margin-top: 1.2rem; }
+        .meta { color: #777; font-size: 0.85rem; margin-bottom: 0.5rem; }
+        h2 { margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+<header>
+    <h1>📰 NewsApp</h1>
+    <nav>
+        {% if user.is_authenticated %}
+            <a href="{% url 'article_list' %}">Articles</a>
+            <a href="{% url 'newsletter_list' %}">Newsletters</a>
+            {% if user.role == 'journalist' or user.role == 'editor' %}
+                <a href="{% url 'article_create' %}">+ Article</a>
+                <a href="{% url 'newsletter_create' %}">+ Newsletter</a>
+            {% endif %}
+            {% if user.role == 'editor' %}
+                <a href="{% url 'approval_dashboard' %}">Approvals</a>
+            {% endif %}
+            <a href="{% url 'logout' %}">Logout ({{ user.username }})</a>
+        {% else %}
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </nav>
+</header>
+
+<div class="container">
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>

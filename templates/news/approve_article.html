@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Approve Article — NewsApp{% endblock %}
+{% block content %}
+<div class="card" style="max-width:600px;margin:0 auto;">
+    <h2>Approve Article</h2>
+    <p style="margin:1rem 0;">You are about to approve and publish <strong>"{{ article.title }}"</strong> by {{ article.author.get_full_name|default:article.author.username }}.</p>
+    <p style="color:#777;font-size:0.9rem;">This will email all subscribers and post to X (Twitter).</p>
+    <form method="post" style="margin-top:1.2rem;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Approve & Publish</button>
+        <a href="{% url 'approval_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

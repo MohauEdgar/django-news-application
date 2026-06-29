@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Approval Dashboard — NewsApp{% endblock %}
+{% block content %}
+<h2>Editor Approval Dashboard</h2>
+<p class="meta" style="margin-bottom:1rem;">Articles awaiting your review ({{ articles|length }} pending)</p>
+
+{% if not articles %}
+    <div class="card"><p>✅ No articles pending approval.</p></div>
+{% endif %}
+
+{% for article in articles %}
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div style="flex:1;">
+            <h3><a href="{% url 'article_detail' article.pk %}" style="text-decoration:none;color:#1a1a2e;">{{ article.title }}</a></h3>
+            <p class="meta">
+                By {{ article.author.get_full_name|default:article.author.username }}
+                <span class="badge badge-journalist">Journalist</span>
+                {% if article.publisher %} · {{ article.publisher.name }}{% endif %}
+                · Submitted {{ article.created_at|date:"M j, Y" }}
+            </p>
+            <p>{{ article.content|truncatewords:25 }}</p>
+        </div>
+        <div style="margin-left:1rem;text-align:right;min-width:120px;">
+            <span class="badge badge-pending">Pending</span>
+            <br><br>
+            <form method="post" action="{% url 'approve_article' article.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success" style="width:100%;margin-bottom:0.4rem;">✓ Approve</button>
+            </form>
+            <a href="{% url 'article_delete' article.pk %}" class="btn btn-danger" style="width:100%;text-align:center;">✗ Delete</a>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
