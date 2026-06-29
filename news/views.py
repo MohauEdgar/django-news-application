@@ -52,6 +52,7 @@ class JournalistOrEditorMixin(LoginRequiredMixin, UserPassesTestMixin):
 # ---------------------------------------------------------------------------
 
 def login_view(request):
+    """Display the login form and authenticate the submitted credentials."""
     if request.user.is_authenticated:
         return redirect('article_list')
     error = None
@@ -68,12 +69,14 @@ def login_view(request):
 
 @login_required
 def logout_view(request):
+    """Log out the current user and redirect to the login page."""
     if request.method == 'POST':
         logout(request)
     return redirect('login')
 
 
 def register_view(request):
+    """Display the registration form and create a new user account on valid submission."""
     from .forms import CustomUserCreationForm
     if request.user.is_authenticated:
         return redirect('article_list')
@@ -91,6 +94,7 @@ def register_view(request):
 # ---------------------------------------------------------------------------
 
 class ArticleListView(LoginRequiredMixin, ListView):
+    """List articles; editors and journalists see all, readers see only approved ones."""
     model = Article
     template_name = 'news/article_list.html'
     context_object_name = 'articles'
@@ -104,6 +108,7 @@ class ArticleListView(LoginRequiredMixin, ListView):
 
 
 class ArticleDetailView(LoginRequiredMixin, DetailView):
+    """Display a single article; readers are restricted to approved articles."""
     model = Article
     template_name = 'news/article_detail.html'
     context_object_name = 'article'
@@ -116,6 +121,7 @@ class ArticleDetailView(LoginRequiredMixin, DetailView):
 
 
 class ArticleCreateView(JournalistOrEditorMixin, CreateView):
+    """Allow journalists and editors to submit a new article for review."""
     model = Article
     template_name = 'news/article_form.html'
     fields = ['title', 'content', 'publisher']
@@ -128,6 +134,7 @@ class ArticleCreateView(JournalistOrEditorMixin, CreateView):
 
 
 class ArticleUpdateView(JournalistOrEditorMixin, UpdateView):
+    """Allow an article's author or any editor to edit an existing article."""
     model = Article
     template_name = 'news/article_form.html'
     fields = ['title', 'content', 'publisher']
@@ -141,6 +148,7 @@ class ArticleUpdateView(JournalistOrEditorMixin, UpdateView):
 
 
 class ArticleDeleteView(JournalistOrEditorMixin, DeleteView):
+    """Allow an article's author or any editor to delete an article."""
     model = Article
     template_name = 'news/article_confirm_delete.html'
     success_url = reverse_lazy('article_list')
@@ -197,6 +205,7 @@ def approve_article_view(request, pk):
 # ---------------------------------------------------------------------------
 
 class NewsletterListView(LoginRequiredMixin, ListView):
+    """List all newsletters for authenticated users."""
     model = Newsletter
     template_name = 'news/newsletter_list.html'
     context_object_name = 'newsletters'
@@ -204,12 +213,14 @@ class NewsletterListView(LoginRequiredMixin, ListView):
 
 
 class NewsletterDetailView(LoginRequiredMixin, DetailView):
+    """Display the full contents of a single newsletter."""
     model = Newsletter
     template_name = 'news/newsletter_detail.html'
     context_object_name = 'newsletter'
 
 
 class NewsletterCreateView(JournalistOrEditorMixin, CreateView):
+    """Allow journalists and editors to create a new newsletter."""
     model = Newsletter
     template_name = 'news/newsletter_form.html'
     fields = ['title', 'description', 'articles']
@@ -222,6 +233,7 @@ class NewsletterCreateView(JournalistOrEditorMixin, CreateView):
 
 
 class NewsletterUpdateView(JournalistOrEditorMixin, UpdateView):
+    """Allow the newsletter author or any editor to update a newsletter."""
     model = Newsletter
     template_name = 'news/newsletter_form.html'
     fields = ['title', 'description', 'articles']
@@ -235,6 +247,7 @@ class NewsletterUpdateView(JournalistOrEditorMixin, UpdateView):
 
 
 class NewsletterDeleteView(JournalistOrEditorMixin, DeleteView):
+    """Allow the newsletter author or any editor to delete a newsletter."""
     model = Newsletter
     template_name = 'news/newsletter_confirm_delete.html'
     success_url = reverse_lazy('newsletter_list')
@@ -354,6 +367,7 @@ class NewsletterListCreateAPIView(generics.ListCreateAPIView):
 
 
 class NewsletterRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView):
+    """GET/PUT/DELETE /api/newsletters/<id>/ — retrieve, update, or delete a newsletter."""
     serializer_class = NewsletterSerializer
 
     def get_permissions(self):
