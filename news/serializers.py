@@ -1,8 +1,11 @@
+"""Serializers for the News Application REST API."""
+
 from rest_framework import serializers
 from .models import CustomUser, Publisher, Article, Newsletter
 
 
 class PublisherSerializer(serializers.ModelSerializer):
+    """Serialize Publisher instances to/from JSON."""
     class Meta:
         model = Publisher
         fields = ['id', 'name', 'description', 'website', 'created_at']
@@ -29,6 +32,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class ArticleSerializer(serializers.ModelSerializer):
+    """Serialize Article instances; exposes author username and publisher name as read-only."""
     author_username = serializers.CharField(source='author.username', read_only=True)
     publisher_name = serializers.CharField(source='publisher.name', read_only=True, allow_null=True)
 
@@ -55,6 +59,7 @@ class ArticleApprovalSerializer(serializers.ModelSerializer):
 
 
 class NewsletterSerializer(serializers.ModelSerializer):
+    """Serialize Newsletter instances; accepts article_ids on write and returns full articles on read."""
     author_username = serializers.CharField(source='author.username', read_only=True)
     articles = ArticleSerializer(many=True, read_only=True)
     article_ids = serializers.PrimaryKeyRelatedField(
@@ -87,11 +92,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ['username', 'email', 'password', 'password2', 'role', 'first_name', 'last_name']
 
     def validate(self, data):
+        """Ensure both password fields match before saving."""
         if data['password'] != data['password2']:
             raise serializers.ValidationError({'password2': 'Passwords do not match.'})
         return data
 
     def create(self, validated_data):
+        """Hash the password and create the user record."""
         validated_data.pop('password2')
         password = validated_data.pop('password')
         user = CustomUser(**validated_data)
