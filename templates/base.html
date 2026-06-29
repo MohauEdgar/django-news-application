@@ -9,8 +9,16 @@
         body { font-family: Georgia, serif; background: #f5f5f0; color: #1a1a1a; }
         header { background: #1a1a2e; color: #fff; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         header h1 { font-size: 1.6rem; letter-spacing: 1px; }
+        nav { display: flex; align-items: center; flex-wrap: wrap; gap: 0.2rem; }
         nav a { color: #ccc; text-decoration: none; margin-left: 1.2rem; font-size: 0.9rem; }
         nav a:hover { color: #fff; }
+        /* Logout button styled to match nav links */
+        .nav-logout-form { display: inline; margin-left: 1.2rem; }
+        .nav-logout-btn {
+            background: none; border: none; color: #ccc; font-size: 0.9rem;
+            cursor: pointer; padding: 0; font-family: inherit;
+        }
+        .nav-logout-btn:hover { color: #fff; }
         .container { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
         .card { background: #fff; border-radius: 6px; padding: 1.5rem; margin-bottom: 1.2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; }
@@ -52,7 +60,15 @@
             {% if user.role == 'editor' %}
                 <a href="{% url 'approval_dashboard' %}">Approvals</a>
             {% endif %}
-            <a href="{% url 'logout' %}">Logout ({{ user.username }})</a>
+            <span style="color:#888;margin-left:1.2rem;font-size:0.85rem;">
+                {{ user.username }}
+                <span class="badge badge-{{ user.role }}" style="margin-left:4px;">{{ user.get_role_display }}</span>
+            </span>
+            <!-- Logout uses POST to properly terminate the session -->
+            <form class="nav-logout-form" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="nav-logout-btn">Logout</button>
+            </form>
         {% else %}
             <a href="{% url 'login' %}">Login</a>
             <a href="{% url 'register' %}">Register</a>
