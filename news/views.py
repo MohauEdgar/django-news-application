@@ -70,8 +70,7 @@ def login_view(request):
 @login_required
 def logout_view(request):
     """Log out the current user and redirect to the login page."""
-    if request.method == 'POST':
-        logout(request)
+    logout(request)
     return redirect('login')
 
 
