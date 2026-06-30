@@ -67,7 +67,6 @@ def login_view(request):
     return render(request, 'news/login.html', {'error': error})
 
 
-@login_required
 def logout_view(request):
     """Log out the current user and redirect to the login page."""
     logout(request)

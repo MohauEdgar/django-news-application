@@ -64,11 +64,7 @@
                 {{ user.username }}
                 <span class="badge badge-{{ user.role }}" style="margin-left:4px;">{{ user.get_role_display }}</span>
             </span>
-            <!-- Logout uses POST to properly terminate the session -->
-            <form class="nav-logout-form" method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="nav-logout-btn">Logout</button>
-            </form>
+            <a href="{% url 'logout' %}">Logout</a>
         {% else %}
             <a href="{% url 'login' %}">Login</a>
             <a href="{% url 'register' %}">Register</a>
